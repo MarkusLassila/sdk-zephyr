@@ -15,10 +15,15 @@
 #include <zephyr/kernel.h>
 #include <kernel_arch_data.h>
 #include <zephyr/logging/log.h>
+#include <nrfx_nvmc.h>
 LOG_MODULE_DECLARE(os, CONFIG_KERNEL_LOG_LEVEL);
 
 static void esf_dump(const z_arch_esf_t *esf)
 {
+	// volatile static uint8_t stop = 1;
+	// while(stop);
+	char buf[512];
+
 	LOG_ERR("r0/a1:  0x%08x  r1/a2:  0x%08x  r2/a3:  0x%08x",
 		esf->basic.a1, esf->basic.a2, esf->basic.a3);
 	LOG_ERR("r3/a4:  0x%08x r12/ip:  0x%08x r14/lr:  0x%08x",
@@ -55,11 +60,25 @@ static void esf_dump(const z_arch_esf_t *esf)
 			callee->v4, callee->v5, callee->v6);
 		LOG_ERR("r10/v7: 0x%08x  r11/v8: 0x%08x    psp:  0x%08x",
 			callee->v7, callee->v8, callee->psp);
+
+		snprintf(buf, sizeof(buf), "r4/v1:  0x%08x  r5/v2:  0x%08x  r6/v3:  0x%08x r7/v4:  0x%08x  r8/v5:  0x%08x  r9/v6:  0x%08x r10/v7: 0x%08x  r11/v8: 0x%08x  psp:  0x%08x, EXC_RETURN: 0x%0x",
+			callee->v1, callee->v2, callee->v3, callee->v4, callee->v5, callee->v6, callee->v7, callee->v8, callee->psp, esf->extra_info.exc_return);
+
+		uint32_t address = 0xf8100;
+		for (int i = 0; i < sizeof(buf); i++) {
+			nrfx_nvmc_byte_write(address + i, buf[i]);
+		}
 	}
 
 	LOG_ERR("EXC_RETURN: 0x%0x", esf->extra_info.exc_return);
 
 #endif /* CONFIG_EXTRA_EXCEPTION_INFO */
+	snprintf(buf, sizeof(buf), "r0/a1:  0x%08x  r1/a2:  0x%08x  r2/a3:  0x%08x r3/a4:  0x%08x r12/ip:  0x%08x r14/lr:  0x%08x xpsr:  0x%08x r15/pc: 0x%08x",
+			esf->basic.a1, esf->basic.a2, esf->basic.a3, esf->basic.a4, esf->basic.ip, esf->basic.lr, esf->basic.xpsr, esf->basic.pc);
+	uint32_t address = 0xf8500;
+	for (int i = 0; i < sizeof(buf); i++) {
+		nrfx_nvmc_byte_write(address + i, buf[i]);
+	}
 	LOG_ERR("Faulting instruction address (r15/pc): 0x%08x",
 		esf->basic.pc);
 }
