@@ -54,6 +54,7 @@ static enum net_verdict lcp_handle(struct ppp_context *ctx,
 				   struct net_if *iface,
 				   struct net_pkt *pkt)
 {
+	LOG_INF("lcp_handle");
 	return ppp_fsm_input(&ctx->lcp.fsm, PPP_LCP, pkt);
 }
 

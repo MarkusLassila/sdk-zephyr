@@ -458,6 +458,7 @@ static int modem_ppp_ppp_api_send(const struct device *dev, struct net_pkt *pkt)
 	struct modem_ppp *ppp = (struct modem_ppp *)dev->data;
 
 	if (atomic_test_bit(&ppp->state, MODEM_PPP_STATE_ATTACHED_BIT) == false) {
+		LOG_ERR("PPP not attached");
 		return -EPERM;
 	}
 
@@ -526,6 +527,7 @@ const struct ppp_api modem_ppp_ppp_api = {
 
 int modem_ppp_attach(struct modem_ppp *ppp, struct modem_pipe *pipe)
 {
+	LOG_INF("modem_ppp_attach");
 	if (atomic_test_bit(&ppp->state, MODEM_PPP_STATE_ATTACHED_BIT) == true) {
 		return 0;
 	}
@@ -547,6 +549,7 @@ void modem_ppp_release(struct modem_ppp *ppp)
 	struct k_work_sync sync;
 	struct net_pkt *pkt;
 
+	LOG_INF("modem_ppp_release");
 	if (atomic_test_and_clear_bit(&ppp->state, MODEM_PPP_STATE_ATTACHED_BIT) == false) {
 		return;
 	}

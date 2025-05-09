@@ -232,6 +232,8 @@ static int modem_backend_uart_async_transmit(void *data, const uint8_t *buf, siz
 		return ret;
 	}
 
+	LOG_INF("Sent %u bytes", bytes_to_transmit);
+
 	return (int)bytes_to_transmit;
 }
 
@@ -255,6 +257,8 @@ static int modem_backend_uart_async_receive(void *data, uint8_t *buf, size_t siz
 	if (!empty) {
 		k_work_schedule(&backend->receive_ready_work, K_NO_WAIT);
 	}
+
+	LOG_INF("Received %u bytes", received);
 
 	return (int)received;
 }

@@ -566,6 +566,8 @@ static enum net_verdict fsm_recv_configure_req(struct ppp_fsm *fsm,
 	int len = 0;
 	enum ppp_packet_type code;
 
+	LOG_INF("fsm_recv_configure_req");
+
 	NET_DBG("[%s/%p] Current state %s (%d)", fsm->name, fsm,
 		ppp_state_str(fsm->state), fsm->state);
 
@@ -684,6 +686,8 @@ static enum net_verdict fsm_recv_configure_ack(struct ppp_fsm *fsm, uint8_t id,
 {
 	NET_DBG("[%s/%p] Current state %s (%d)", fsm->name, fsm,
 		ppp_state_str(fsm->state), fsm->state);
+
+	LOG_INF("fsm_recv_configure_ack");
 
 	if (id != fsm->req_id || fsm->ack_received) {
 		return NET_DROP;
@@ -850,6 +854,7 @@ static enum net_verdict fsm_recv_terminate_req(struct ppp_fsm *fsm, uint8_t id,
 					       struct net_pkt *pkt,
 					       uint16_t length)
 {
+	LOG_INF("fsm_recv_terminate_req");
 	NET_DBG("[%s/%p] Current state %s (%d)", fsm->name, fsm,
 		ppp_state_str(fsm->state), fsm->state);
 
@@ -1032,6 +1037,7 @@ enum net_verdict ppp_fsm_input(struct ppp_fsm *fsm, uint16_t proto,
 	int ret;
 	struct ppp_context *ctx = ppp_fsm_ctx(fsm);
 
+	LOG_INF("fsm_input");
 	ret = net_pkt_read_u8(pkt, &code);
 	if (ret < 0) {
 		NET_DBG("[%s/%p] Cannot read %s (pkt len %zd)",
